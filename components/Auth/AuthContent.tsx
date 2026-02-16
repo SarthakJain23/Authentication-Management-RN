@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import { RootStackParamList } from "../../configs/types";
+import { AutheticateFormData, RootStackParamList } from "../../configs/types";
 import { Colors } from "../../constants/styles";
 import FlatButton from "../ui/FlatButton";
 import AuthForm from "./AuthForm";
@@ -23,7 +23,7 @@ export interface CredentialsInvalid {
 
 interface AuthContentProps {
   isLogin: boolean;
-  onAuthenticate: (credentials: { email: string; password: string }) => void;
+  onAuthenticate: (credentials: AutheticateFormData) => void;
 }
 
 const AuthContent: React.FC<AuthContentProps> = ({
