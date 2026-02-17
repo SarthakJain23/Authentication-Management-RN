@@ -1,4 +1,6 @@
-import { createContext, useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import AppLoading from "expo-app-loading";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
   token: string;
@@ -22,13 +24,37 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
   children,
 }) => {
   const [token, setToken] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const loadToken = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem("authToken");
+      if (storedToken) {
+        setToken(storedToken);
+      }
+    } catch (error) {
+      console.error("Failed to load token from AsyncStorage:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadToken();
+  }, []);
 
   const authenticate = (newToken: string) => {
     setToken(newToken);
+    AsyncStorage.setItem("authToken", newToken).catch((error) => {
+      console.error("Failed to save token to AsyncStorage:", error);
+    });
   };
 
   const logout = () => {
     setToken("");
+    AsyncStorage.removeItem("authToken").catch((error) => {
+      console.error("Failed to remove token from AsyncStorage:", error);
+    });
   };
 
   const value: AuthContextType = {
@@ -37,6 +63,10 @@ const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
     authenticate,
     logout,
   };
+
+  if (isLoading) {
+    return <AppLoading />;
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -5,6 +5,7 @@ import { useAuth } from "../store/auth-context";
 
 const WelcomeScreen: React.FC = () => {
   const { token } = useAuth();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [fetchedMessage, setFetchedMessage] = useState<string | null>(null);
 
   const getMessage = async () => {
@@ -15,6 +16,8 @@ const WelcomeScreen: React.FC = () => {
       setFetchedMessage(data);
     } catch (error) {
       console.error("Error fetching message:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -26,6 +29,7 @@ const WelcomeScreen: React.FC = () => {
     <View style={styles.rootContainer}>
       <Text style={styles.title}>Welcome!</Text>
       <Text>You authenticated successfully!</Text>
+      {isLoading ? <Text>Loading message...</Text> : null}
       <Text>{fetchedMessage}</Text>
     </View>
   );
